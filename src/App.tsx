@@ -1,4 +1,4 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ChakraProvider,
   Box,
@@ -8,31 +8,44 @@ import {
   Code,
   Grid,
   theme,
-} from "@chakra-ui/react"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Logo } from "./Logo"
+} from "@chakra-ui/react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { RequireAuth } from "./components/RequireAuth";
+import { Home } from "./features/home/Home";
+import { User } from "./features/user/User";
+import { Landing } from "./features/landing/Landing";
+import { DetailedQuestion } from "./features/question/DetailedQuestion";
 
 export const App = () => (
   <ChakraProvider theme={theme}>
-    <Box textAlign="center" fontSize="xl">
-      <Grid minH="100vh" p={3}>
-        <ColorModeSwitcher justifySelf="flex-end" />
-        <VStack spacing={8}>
-          <Logo h="40vmin" pointerEvents="none" />
-          <Text>
-            Edit <Code fontSize="xl">src/App.tsx</Code> and save to reload.
-          </Text>
-          <Link
-            color="teal.500"
-            href="https://chakra-ui.com"
-            fontSize="2xl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn Chakra
-          </Link>
-        </VStack>
-      </Grid>
-    </Box>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/user" element={<User />} />
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <Landing />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/browse"
+          element={
+            <RequireAuth>
+              <Home />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/question/:id"
+          element={
+            <RequireAuth>
+              <DetailedQuestion />
+            </RequireAuth>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   </ChakraProvider>
-)
+);
