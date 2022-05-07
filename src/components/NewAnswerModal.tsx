@@ -27,6 +27,8 @@ export const NewAnswerModal = ({ open, close, d }: any): ReactElement => {
     });
     if (resp.status === 200) {
       close(false);
+      // eslint-disable-next-line no-restricted-globals
+      location.reload();
     }
   };
 

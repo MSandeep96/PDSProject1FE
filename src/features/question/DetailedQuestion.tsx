@@ -17,7 +17,14 @@ import { axios } from "../../utils/axios";
 export const DetailedQuestion = (): ReactElement => {
   let params = useParams();
   const [qa, setQa] = useState<any>([]);
+  const [question, setQuestion] = useState<any>({});
   const [showNewAnsModal, setShowNewAnsModal] = useState(false);
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    setUserId(username as string);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,19 +36,26 @@ export const DetailedQuestion = (): ReactElement => {
     fetchData();
   }, [params.id]);
 
-  if (qa.length === 0) {
-    return <div>No answers yet</div>;
-  }
+  useEffect(() => {
+    const fetchData = async () => {
+      const resp = await axios.get(`/questions/${params.id}`);
+      if (resp.status === 200) {
+        setQuestion(resp.data);
+      }
+    };
+    fetchData();
+  }, [params.id]);
+
   return (
     <Box w="100vw">
       <Box p="4">
-        <Text fontSize="2xl">{qa[0].title}</Text>
+        <Text fontSize="2xl">{question.title}</Text>
         <Divider />
-        <Text my="4">{qa[0].body}</Text>
+        <Text my="4">{question.body}</Text>
         <Divider />
         <HStack my="4">
-          <Text>{qa[0].username}</Text>
-          <Text>{qa[0].tname}</Text>
+          <Text>{question.username}</Text>
+          <Text>{question.tname}</Text>
         </HStack>
         <Divider />
       </Box>
@@ -51,19 +65,19 @@ export const DetailedQuestion = (): ReactElement => {
           onClick={() => {
             setShowNewAnsModal(true);
           }}
+          disabled={userId === question.username}
         >
           Add new
         </Button>
       </HStack>
       <VStack mt="4" spacing="8">
-        {qa.map((d: any) => (
-          <Answer key={d.auser} d={d} canUpvote={true} />
-        ))}
+        {qa.length === 0 && <Text>No answers yet!</Text>}
+        {qa.length > 0 && qa.map((d: any) => <Answer key={d.auser} d={d} />)}
       </VStack>
       <NewAnswerModal
         open={showNewAnsModal}
         close={setShowNewAnsModal}
-        d={qa[0]}
+        d={question}
       />
     </Box>
   );

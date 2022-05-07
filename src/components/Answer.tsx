@@ -7,18 +7,29 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { axios } from "../utils/axios";
 
-export const Answer = ({
-  d,
-  canUpvote,
-}: {
-  d: any;
-  canUpvote: boolean;
-}): ReactElement => {
+export const Answer = ({ d }: { d: any }): ReactElement => {
   const [isUpvote, setIsUpvote] = React.useState(false);
+  const [status, setStatus] = React.useState("");
+  const [userId, setUserId] = React.useState("");
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    setUserId(username as string);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const resp = await axios.get(`/users/status/${d.auser}`);
+      if (resp.status === 200) {
+        setStatus(resp.data.Status);
+      }
+    };
+    fetchData();
+  }, [d.auser]);
 
   const upvote = async () => {
     const resp = await axios.post("/answers/upvote", {
@@ -27,6 +38,8 @@ export const Answer = ({
     });
     if (resp.status === 200) {
       setIsUpvote(true);
+      // eslint-disable-next-line no-restricted-globals
+      location.reload();
     }
   };
 
@@ -48,7 +61,7 @@ export const Answer = ({
           <VStack>
             <IconButton
               size="sm"
-              disabled={!canUpvote}
+              disabled={userId === d.auser}
               aria-label="upvote"
               colorScheme={isUpvote ? "red" : "gray"}
               icon={<ArrowUpIcon />}
@@ -62,7 +75,7 @@ export const Answer = ({
         </HStack>
         <Divider />
         <HStack spacing="8">
-          <Text>{d.auser}</Text>
+          <Text>{d.auser + "-" + status}</Text>
           <Text>{new Date(d.timeOfAnswer).toLocaleString()}</Text>
         </HStack>
       </Box>

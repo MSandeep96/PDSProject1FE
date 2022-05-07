@@ -24,7 +24,7 @@ export const UserAnswers = (): ReactElement => {
     <Box>
       <VStack spacing="8" alignItems="flex-start">
         {answ.map((d: any) => (
-          <Answer key={d.auser} d={d} canUpvote={false} />
+          <Answer key={d.auser} d={d} />
         ))}
       </VStack>
     </Box>

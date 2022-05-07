@@ -9,14 +9,17 @@ import {
   TabPanel,
   TabPanels,
   Tabs,
+  useDisclosure,
 } from "@chakra-ui/react";
 import React, { ReactElement } from "react";
 import { UserAnswers } from "./UserAnswers";
 import { UserQuestions } from "./UserQuestions";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { NewQuestionModal } from "../../components/NewQuestionModal";
 
 export const Landing = (): ReactElement => {
   const navigate = useNavigate();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const doLogout = () => {
     localStorage.removeItem("isAuthenticated");
@@ -31,6 +34,9 @@ export const Landing = (): ReactElement => {
         <Box>
           <Button mr="4" as={RouterLink} to="/browse" colorScheme="green">
             Browse
+          </Button>
+          <Button mr="4" onClick={onOpen}>
+            New Question
           </Button>
           <Button onClick={doLogout}>Logout</Button>
         </Box>
@@ -49,6 +55,7 @@ export const Landing = (): ReactElement => {
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <NewQuestionModal isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 };
